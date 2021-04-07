@@ -21,7 +21,7 @@ import shutil
 import signal
 import time
 import tempfile
-from helpers import unittest, skipOnTravis
+from helpers import unittest, skipOnTravis, skipOnGithubActions
 import luigi.rpc
 import luigi.server
 import luigi.cmdline
@@ -325,23 +325,28 @@ class _ServerTest(unittest.TestCase):
         self.stop_server()
 
     @skipOnTravis('https://travis-ci.org/spotify/luigi/jobs/78315794')
+    @skipOnGithubActions('https://travis-ci.org/spotify/luigi/jobs/78315794')
     def test_ping(self):
         self.sch.ping(worker='xyz')
 
     @skipOnTravis('https://travis-ci.org/spotify/luigi/jobs/78023665')
+    @skipOnGithubActions('https://travis-ci.org/spotify/luigi/jobs/78023665')
     def test_raw_ping(self):
         self.sch._request('/api/ping', {'worker': 'xyz'})
 
     @skipOnTravis('https://travis-ci.org/spotify/luigi/jobs/78023665')
+    @skipOnGithubActions('https://travis-ci.org/spotify/luigi/jobs/78023665')
     def test_raw_ping_extended(self):
         self.sch._request('/api/ping', {'worker': 'xyz', 'foo': 'bar'})
 
     @skipOnTravis('https://travis-ci.org/spotify/luigi/jobs/166833694')
+    @skipOnGithubActions('https://travis-ci.org/spotify/luigi/jobs/166833694')
     def test_404(self):
         with self.assertRaises(luigi.rpc.RPCError):
             self.sch._request('/api/fdsfds', {'dummy': 1})
 
     @skipOnTravis('https://travis-ci.org/spotify/luigi/jobs/72953884')
+    @skipOnGithubActions('https://travis-ci.org/spotify/luigi/jobs/72953884')
     def test_save_state(self):
         self.sch.add_task(worker='X', task_id='B', deps=('A',))
         self.sch.add_task(worker='X', task_id='A')
