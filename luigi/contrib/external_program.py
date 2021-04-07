@@ -275,18 +275,22 @@ class ExternalPythonProgramTask(ExternalProgramTask):
     def program_environment(self):
         env = super(ExternalPythonProgramTask, self).program_environment()
 
+        # Make this work in Windows
+        path_delimiter, venv_folder = (
+            (";", "Scripts") if (os.name == "nt") else (":", "bin")
+        )
+
         if self.extra_pythonpath:
-            pythonpath = ':'.join([self.extra_pythonpath, env.get('PYTHONPATH', '')])
-            env.update({'PYTHONPATH': pythonpath})
+            pythonpath = path_delimiter.join([self.extra_pythonpath, env.get("PYTHONPATH", "")])
+            env.update({"PYTHONPATH": pythonpath})
 
         if self.virtualenv:
             # Make the same changes to the env that a normal venv/bin/activate script would
-            path = ':'.join(['{}/bin'.format(self.virtualenv), env.get('PATH', '')])
-            env.update({
-                'PATH': path,
-                'VIRTUAL_ENV': self.virtualenv
-            })
+            venv_path = os.path.join(self.virtualenv, venv_folder)
+            path = path_delimiter.join([venv_path, env.get("PATH", "")])
+            env.update({"PATH": path, "VIRTUAL_ENV": self.virtualenv})
+
             # remove PYTHONHOME env variable, if it exists
-            env.pop('PYTHONHOME', None)
+            env.pop("PYTHONHOME", None)
 
         return env
